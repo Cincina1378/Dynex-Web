@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!--
+    DYNEX PANEL
+    BU DOSYANIN ADI:
+    public/index.html
+
+    GITHUB'TA:
+    Add file → Create new file
+    Dosya adı: public/index.html
+
+    Bu sayfa gerçek Discord sunucularını
+    server.js üzerinden gösterecek.
+-->
+
+<title>Dynex | Kontrol Paneli</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #080a10;
+    color: white;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+}
+
+header {
+    height: 72px;
+    background: #0d1018;
+    border-bottom: 1px solid #222938;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.logoIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: linear-gradient(135deg,#5865f2,#7658ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #c8cdd8;
+}
+
+.user img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.container {
+    width: 92%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 45px 0;
+}
+
+h1 {
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #858c9e;
+    margin-bottom: 32px;
+}
+
+.serverGrid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px;
+}
+
+.card {
+    background: #10141e;
+    border: 1px solid #222938;
+    border-radius: 16px;
+    padding: 21px;
+    transition: .2s;
+}
+
+.card:hover {
+    border-color: #343d55;
+    transform: translateY(-2px);
+}
+
+.serverTop {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.serverIcon {
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    background: #5865f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.serverIcon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.serverName {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.status {
+    color: #858c9e;
+    font-size: 13px;
+    margin-top: 15px;
+}
+
+button {
+    width: 100%;
+    border: 0;
+    border-radius: 9px;
+    padding: 12px;
+    margin-top: 17px;
+    color: white;
+    background: #5865f2;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #4752c4;
+}
+
+.invite {
+    background: #202636;
+}
+
+.invite:hover {
+    background: #2b3345;
+}
+
+.disabled {
+    background: #171b25;
+    color: #777f90;
+    cursor: not-allowed;
+}
+
+.loading {
+    text-align: center;
+    color: #858c9e;
+    padding: 50px;
+}
+
+.error {
+    background: #301b20;
+    border: 1px solid #63313b;
+    padding: 20px;
+    border-radius: 12px;
+    color: #e5a5af;
+}
+
+.login {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loginBox {
+    width: 420px;
+    max-width: 90%;
+    background: #10141e;
+    border: 1px solid #222938;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+}
+
+.bigLogo {
+    width: 78px;
+    height: 78px;
+    border-radius: 21px;
+    background: linear-gradient(135deg,#5865f2,#7658ff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.loginBox h1 {
+    margin-top: 20px;
+}
+
+.loginBox p {
+    color: #858c9e;
+    line-height: 1.5;
+    margin: 14px 0 25px;
+}
+
+.loginButton {
+    background: #5865f2;
+}
+
+.loginButton:hover {
+    background: #4752c4;
+}
+
+.hidden {
+    display: none;
+}
+
+@media(max-width:600px) {
+
+    header {
+        padding: 0 15px;
+    }
+
+    .container {
+        padding: 30px 0;
+    }
+
+    .serverGrid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+
+<!-- ==============================
+     GİRİŞ EKRANI
+================================= -->
+
+<div id="loginScreen" class="login">
+
+    <div class="loginBox">
+
+        <div class="bigLogo">
+            D
+        </div>
+
+        <h1>Dynex</h1>
+
+        <p>
+            Dynex kontrol paneline erişmek için
+            Discord hesabınla giriş yap.
+        </p>
+
+        <button
+            class="loginButton"
+            onclick="discordLogin()">
+
+            Discord ile Giriş Yap
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==============================
+     ANA PANEL
+================================= -->
+
+<div id="dashboard" class="hidden">
+
+<header>
+
+    <div class="logo">
+
+        <div class="logoIcon">
+            D
+        </div>
+
+        Dynex
+
+    </div>
+
+    <div id="userInfo"></div>
+
+</header>
+
+
+<div class="container">
+
+    <h1>
+        Sunucu Rehberi
+    </h1>
+
+    <div class="subtitle">
+        Discord hesabındaki sunucular
+    </div>
+
+    <div
+        id="serverGrid"
+        class="serverGrid">
+
+        <div class="loading">
+            Sunucular yükleniyor...
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/*
+========================================
+DYNEX DISCORD PANEL
+========================================
+
+Bu JavaScript:
+
+1. Discord OAuth2 girişini başlatır.
+2. server.js'den gerçek kullanıcıyı alır.
+3. Gerçek Discord sunucularını alır.
+4. Sunucu ikonlarını gösterir.
+5. Sunucu adlarını gösterir.
+6. Dynex kuruluysa "Kontrol Paneli"
+   gösterir.
+7. Dynex kurulu değilse "Dav et"
+   gösterir.
+8. Kullanıcının yönetim yetkisini
+   kontrol eder.
+*/
+
+
+/* ==============================
+   DISCORD GİRİŞİ
+================================= */
+
+function discordLogin() {
+
+    window.location.href = "/login";
+
+}
+
+
+/* ==============================
+   SUNUCULARI YÜKLE
+================================= */
+
+async function loadDashboard() {
+
+    try {
+
+        const response =
+            await fetch("/api/dashboard");
+
+
+        /* Kullanıcı giriş yapmamış */
+
+        if (response.status === 401) {
+
+            document
+                .getElementById("loginScreen")
+                .classList.remove("hidden");
+
+            document
+                .getElementById("dashboard")
+                .classList.add("hidden");
+
+            return;
+        }
+
+
+        /* API hatası */
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Sunucular alınamadı."
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        /* Giriş ekranını gizle */
+
+        document
+            .getElementById("loginScreen")
+            .classList.add("hidden");
+
+
+        /* Paneli göster */
+
+        document
+            .getElementById("dashboard")
+            .classList.remove("hidden");
+
+
+        /* Kullanıcı */
+
+        showUser(data.user);
+
+
+        /* Sunucular */
+
+        showServers(data.guilds);
+
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        document
+            .getElementById("serverGrid")
+            .innerHTML = `
+
+                <div class="error">
+
+                    Sunucular yüklenirken
+                    bir hata oluştu.
+
+                </div>
+
+            `;
+
+    }
+
+}
+
+
+/* ==============================
+   KULLANICI
+================================= */
+
+function showUser(user) {
+
+    const element =
+        document.getElementById(
+            "userInfo"
+        );
+
+
+    if (user.avatar) {
+
+        element.innerHTML = `
+
+            <div class="user">
+
+                <img
+                    src="${user.avatar}"
+                    alt="Avatar">
+
+                <span>
+                    ${escapeHTML(
+                        user.username
+                    )}
+                </span>
+
+            </div>
+
+        `;
+
+    }
+
+    else {
+
+        element.innerHTML = `
+
+            <div class="user">
+
+                <span>
+                    ${escapeHTML(
+                        user.username
+                    )}
+                </span>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* ==============================
+   SUNUCULAR
+================================= */
+
+function showServers(guilds) {
+
+    const container =
+        document.getElementById(
+            "serverGrid"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (!guilds.length) {
+
+        container.innerHTML = `
+
+            <div class="error">
+
+                Discord hesabında
+                sunucu bulunamadı.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    guilds.forEach(guild => {
+
+        let icon;
+
+
+        /* Sunucu ikonu */
+
+        if (guild.icon) {
+
+            icon = `
+
+                <img
+                    src="${guild.icon}"
+                    alt="Sunucu">
+
+            `;
+
+        }
+
+        else {
+
+            icon =
+                escapeHTML(
+                    guild.name
+                        .charAt(0)
+                        .toUpperCase()
+                );
+
+        }
+
+
+        let action;
+
+
+        /* Yetkisi yok */
+
+        if (!guild.canManage) {
+
+            action = `
+
+                <div class="status">
+
+                    ⛔ Bu sunucuyu yönetme
+                    yetkin yok.
+
+                </div>
+
+                <button
+                    class="disabled"
+                    disabled>
+
+                    Erişim Yok
+
+                </button>
+
+            `;
+
+        }
+
+
+        /* Bot var */
+
+        else if (guild.botInstalled) {
+
+            action = `
+
+                <div class="status">
+
+                    🟢 Dynex bu sunucuda kurulu.
+
+                </div>
+
+                <button
+                    onclick="
+                    openPanel('${guild.id}')
+                    ">
+
+                    🎫 Kontrol Paneli
+
+                </button>
+
+            `;
+
+        }
+
+
+        /* Bot yok */
+
+        else {
+
+            action = `
+
+                <div class="status">
+
+                    ⚪ Dynex bu sunucuda kurulu değil.
+
+                </div>
+
+                <button
+                    class="invite"
+                    onclick="
+                    inviteBot('${guild.id}')
+                    ">
+
+                    ➕ Dynex'i Davet Et
+
+                </button>
+
+            `;
+
+        }
+
+
+        container.innerHTML += `
+
+            <div class="card">
+
+                <div class="serverTop">
+
+                    <div class="serverIcon">
+
+                        ${icon}
+
+                    </div>
+
+                    <div class="serverName">
+
+                        ${escapeHTML(
+                            guild.name
+                        )}
+
+                    </div>
+
+                </div>
+
+                ${action}
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+/* ==============================
+   KONTROL PANELİ
+================================= */
+
+function openPanel(guildId) {
+
+    window.location.href =
+        "/panel.html?guild=" +
+        encodeURIComponent(guildId);
+
+}
+
+
+/* ==============================
+   BOT DAVET
+================================= */
+
+function inviteBot(guildId) {
+
+    window.location.href =
+        "/invite/" +
+        encodeURIComponent(guildId);
+
+}
+
+
+/* ==============================
+   HTML GÜVENLİĞİ
+================================= */
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* ==============================
+   BAŞLAT
+================================= */
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>
