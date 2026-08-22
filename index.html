@@ -25,11 +25,9 @@ header{
     height:72px;
     background:#0d1018;
     border-bottom:1px solid #222938;
-
     display:flex;
     align-items:center;
     justify-content:space-between;
-
     padding:0 28px;
 }
 
@@ -37,7 +35,6 @@ header{
     display:flex;
     align-items:center;
     gap:11px;
-
     font-size:20px;
     font-weight:bold;
 }
@@ -45,10 +42,8 @@ header{
 .logoIcon{
     width:40px;
     height:40px;
-
     border-radius:11px;
     background:#5865f2;
-
     display:flex;
     align-items:center;
     justify-content:center;
@@ -57,10 +52,8 @@ header{
 .robotLogo{
     font-size:27px;
     display:flex;
-
     width:100%;
     height:100%;
-
     align-items:center;
     justify-content:center;
 }
@@ -69,7 +62,6 @@ header{
     display:flex;
     align-items:center;
     gap:10px;
-
     color:#c8cdd8;
 }
 
@@ -82,9 +74,7 @@ header{
 .container{
     width:92%;
     max-width:1100px;
-
     margin:auto;
-
     padding:45px 0;
 }
 
@@ -99,22 +89,15 @@ h1{
 
 .serverGrid{
     display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(300px,1fr));
-
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
     gap:18px;
 }
 
 .card{
     background:#10141e;
-
     border:1px solid #222938;
-
     border-radius:16px;
-
     padding:21px;
-
     transition:.2s;
 }
 
@@ -125,26 +108,19 @@ h1{
 
 .serverTop{
     display:flex;
-
     align-items:center;
-
     gap:15px;
 }
 
 .serverIcon{
     width:58px;
     height:58px;
-
     border-radius:16px;
-
     background:#5865f2;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
     overflow:hidden;
-
     font-size:20px;
     font-weight:bold;
 }
@@ -162,28 +138,19 @@ h1{
 
 .status{
     color:#858c9e;
-
     font-size:13px;
-
     margin-top:15px;
 }
 
 button{
     width:100%;
-
     border:0;
     border-radius:9px;
-
     padding:12px;
-
     margin-top:17px;
-
     color:#fff;
-
     background:#5865f2;
-
     font-weight:bold;
-
     cursor:pointer;
 }
 
@@ -201,17 +168,13 @@ button:hover{
 
 .disabled{
     background:#171b25;
-
     color:#777f90;
-
     cursor:not-allowed;
 }
 
 .login{
     min-height:100vh;
-
     display:flex;
-
     justify-content:center;
     align-items:center;
 }
@@ -219,30 +182,20 @@ button:hover{
 .loginBox{
     width:420px;
     max-width:90%;
-
     background:#10141e;
-
     border:1px solid #222938;
-
     border-radius:20px;
-
     padding:40px;
-
     text-align:center;
 }
 
 .bigLogo{
     width:90px;
     height:90px;
-
     border-radius:24px;
-
     margin:auto;
-
     background:#5865f2;
-
     display:flex;
-
     align-items:center;
     justify-content:center;
 }
@@ -257,9 +210,7 @@ button:hover{
 
 .loginBox p{
     color:#858c9e;
-
     line-height:1.5;
-
     margin:14px 0 25px;
 }
 
@@ -296,24 +247,15 @@ button:hover{
 
 <body>
 
-
-<!-- =========================================
-     GİRİŞ EKRANI
-========================================= -->
-
 <div id="loginScreen" class="login">
 
     <div class="loginBox">
 
         <div class="bigLogo">
-
             <span class="robotLogo">🤖</span>
-
         </div>
 
-        <h1>
-            Dynex
-        </h1>
+        <h1>Dynex</h1>
 
         <p>
             Dynex kontrol paneline erişmek için
@@ -333,23 +275,14 @@ button:hover{
 </div>
 
 
-<!-- =========================================
-     DASHBOARD
-========================================= -->
-
-<div
-    id="dashboard"
-    class="hidden">
-
+<div id="dashboard" class="hidden">
 
 <header>
 
     <div class="logo">
 
         <div class="logoIcon">
-
             <span class="robotLogo">🤖</span>
-
         </div>
 
         Dynex
@@ -368,19 +301,13 @@ button:hover{
     </h1>
 
     <div class="subtitle">
-
         Discord hesabındaki sunucular
-
     </div>
 
-    <div
-        id="serverGrid"
-        class="serverGrid">
+    <div id="serverGrid" class="serverGrid">
 
         <div class="status">
-
             Sunucular yükleniyor...
-
         </div>
 
     </div>
@@ -398,88 +325,79 @@ button:hover{
 
 function discordLogin(){
 
-    window.location.href="/login";
+    window.location.href =
+        "/.netlify/functions/login";
 
 }
 
 
 /* ========================================
-   DASHBOARD
+   CALLBACK'TEN GELEN KULLANICI
 ======================================== */
 
-async function loadDashboard(){
+function checkDiscordLogin(){
 
-    try{
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
 
-        const response =
-            await fetch("/api/dashboard");
+    const discordId =
+        params.get("discord_id");
 
-
-        if(response.status === 401){
-
-            document
-                .getElementById("loginScreen")
-                .classList.remove("hidden");
-
-            document
-                .getElementById("dashboard")
-                .classList.add("hidden");
-
-            return;
-
-        }
+    const username =
+        params.get("username");
 
 
-        if(!response.ok){
+    if(!discordId || !username){
 
-            throw new Error(
-                "Discord verileri alınamadı."
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        document
-            .getElementById("loginScreen")
-            .classList.add("hidden");
-
-
-        document
-            .getElementById("dashboard")
-            .classList.remove("hidden");
-
-
-        showUser(data.user);
-
-        showServers(data.guilds);
+        return false;
 
     }
 
-    catch(error){
 
-        console.error(error);
+    document
+        .getElementById("loginScreen")
+        .classList.add("hidden");
 
-        document
-            .getElementById("serverGrid")
-            .innerHTML = `
 
-                <div class="card">
+    document
+        .getElementById("dashboard")
+        .classList.remove("hidden");
 
-                    <div class="status">
 
-                        ❌ Sunucular yüklenemedi.
+    showUser({
+        id: discordId,
+        username: username
+    });
 
-                    </div>
+
+    document
+        .getElementById("serverGrid")
+        .innerHTML = `
+
+            <div class="card">
+
+                <div class="status">
+
+                    🟢 Discord hesabın başarıyla
+                    doğrulandı.
 
                 </div>
 
-            `;
+                <button
+                    onclick="loadServers()">
 
-    }
+                    🔄 Sunucuları Yükle
+
+                </button>
+
+            </div>
+
+        `;
+
+
+    return true;
 
 }
 
@@ -491,42 +409,93 @@ async function loadDashboard(){
 function showUser(user){
 
     const element =
-        document.getElementById("userInfo");
+        document.getElementById(
+            "userInfo"
+        );
 
 
-    if(user.avatar){
+    element.innerHTML = `
 
-        element.innerHTML = `
+        <div class="user">
 
-            <div class="user">
+            <span>
+                ${escapeHTML(user.username)}
+            </span>
 
-                <img
-                    src="${user.avatar}"
-                    alt="Avatar">
+        </div>
 
-                <span>
+    `;
 
-                    ${escapeHTML(
-                        user.username
-                    )}
+}
 
-                </span>
+
+/* ========================================
+   SUNUCULAR
+======================================== */
+
+async function loadServers(){
+
+    const container =
+        document.getElementById(
+            "serverGrid"
+        );
+
+
+    container.innerHTML = `
+
+        <div class="card">
+
+            <div class="status">
+
+                🔄 Sunucular yükleniyor...
 
             </div>
 
-        `;
+        </div>
+
+    `;
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/.netlify/functions/dashboard"
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Sunucular alınamadı."
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        showServers(
+            data.guilds || []
+        );
 
     }
 
-    else{
+    catch(error){
 
-        element.innerHTML = `
+        console.error(error);
 
-            <div class="user">
+        container.innerHTML = `
 
-                ${escapeHTML(
-                    user.username
-                )}
+            <div class="card">
+
+                <div class="status">
+
+                    ❌ Sunucular yüklenemedi.
+
+                </div>
 
             </div>
 
@@ -538,7 +507,7 @@ function showUser(user){
 
 
 /* ========================================
-   SUNUCULAR
+   SUNUCULARI GÖSTER
 ======================================== */
 
 function showServers(guilds){
@@ -584,7 +553,7 @@ function showServers(guilds){
             icon = `
 
                 <img
-                    src="${guild.icon}"
+                    src="${escapeHTML(guild.icon)}"
                     alt="Sunucu">
 
             `;
@@ -617,7 +586,6 @@ function showServers(guilds){
 
                 </div>
 
-
                 <button
                     class="disabled"
                     disabled>
@@ -640,11 +608,8 @@ function showServers(guilds){
 
                 </div>
 
-
                 <button
-                    onclick="
-                    openPanel('${guild.id}')
-                    ">
+                    onclick="openPanel('${escapeHTML(guild.id)}')">
 
                     🎫 Kontrol Paneli
 
@@ -664,12 +629,9 @@ function showServers(guilds){
 
                 </div>
 
-
                 <button
                     class="invite"
-                    onclick="
-                    inviteBot('${guild.id}')
-                    ">
+                    onclick="inviteBot('${escapeHTML(guild.id)}')">
 
                     ➕ Dynex'i Davet Et
 
@@ -692,17 +654,13 @@ function showServers(guilds){
 
                     </div>
 
-
                     <div class="serverName">
 
-                        ${escapeHTML(
-                            guild.name
-                        )}
+                        ${escapeHTML(guild.name)}
 
                     </div>
 
                 </div>
-
 
                 ${action}
 
@@ -762,7 +720,13 @@ function escapeHTML(text){
    BAŞLAT
 ======================================== */
 
-loadDashboard();
+if(!checkDiscordLogin()){
+
+    document
+        .getElementById("loginScreen")
+        .classList.remove("hidden");
+
+}
 
 </script>
 
