@@ -274,7 +274,6 @@ button:hover{
 
 </div>
 
-
 <div id="dashboard" class="hidden">
 
 <header>
@@ -292,7 +291,6 @@ button:hover{
     <div id="userInfo"></div>
 
 </header>
-
 
 <div class="container">
 
@@ -315,7 +313,6 @@ button:hover{
 </div>
 
 </div>
-
 
 <script>
 
@@ -348,29 +345,22 @@ function checkDiscordLogin(){
     const username =
         params.get("username");
 
-
     if(!discordId || !username){
-
         return false;
-
     }
-
 
     document
         .getElementById("loginScreen")
         .classList.add("hidden");
 
-
     document
         .getElementById("dashboard")
         .classList.remove("hidden");
-
 
     showUser({
         id: discordId,
         username: username
     });
-
 
     document
         .getElementById("serverGrid")
@@ -396,7 +386,6 @@ function checkDiscordLogin(){
 
         `;
 
-
     return true;
 
 }
@@ -412,7 +401,6 @@ function showUser(user){
         document.getElementById(
             "userInfo"
         );
-
 
     element.innerHTML = `
 
@@ -440,7 +428,6 @@ async function loadServers(){
             "serverGrid"
         );
 
-
     container.innerHTML = `
 
         <div class="card">
@@ -455,14 +442,15 @@ async function loadServers(){
 
     `;
 
-
     try{
 
         const response =
             await fetch(
-                "/.netlify/functions/dashboard"
+                "/.netlify/functions/dashboard",
+                {
+                    credentials: "include"
+                }
             );
-
 
         if(!response.ok){
 
@@ -472,10 +460,8 @@ async function loadServers(){
 
         }
 
-
         const data =
             await response.json();
-
 
         showServers(
             data.guilds || []
@@ -517,9 +503,7 @@ function showServers(guilds){
             "serverGrid"
         );
 
-
     container.innerHTML = "";
-
 
     if(!guilds.length){
 
@@ -542,11 +526,9 @@ function showServers(guilds){
 
     }
 
-
     guilds.forEach(guild=>{
 
         let icon;
-
 
         if(guild.icon){
 
@@ -571,9 +553,7 @@ function showServers(guilds){
 
         }
 
-
         let action;
-
 
         if(!guild.canManage){
 
@@ -640,7 +620,6 @@ function showServers(guilds){
             `;
 
         }
-
 
         container.innerHTML += `
 
@@ -724,7 +703,8 @@ if(!checkDiscordLogin()){
 
     document
         .getElementById("loginScreen")
-        .classList.remove("hidden");
+        .classList
+        .remove("hidden");
 
 }
 
