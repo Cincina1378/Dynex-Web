@@ -4,17 +4,18 @@ exports.handler = async function () {
   const redirectUri =
     "https://dynexweb.netlify.app/.netlify/functions/callback";
 
-  const url =
-    "https://discord.com/oauth2/authorize" +
-    "?client_id=" + encodeURIComponent(clientId) +
-    "&response_type=code" +
-    "&redirect_uri=" + encodeURIComponent(redirectUri) +
-    "&scope=identify%20guilds";
+  const params = new URLSearchParams({
+    client_id: clientId,
+    response_type: "code",
+    redirect_uri: redirectUri,
+    scope: "identify guilds"
+  });
 
   return {
     statusCode: 302,
     headers: {
-      Location: url
+      Location:
+        `https://discord.com/oauth2/authorize?${params.toString()}`
     }
   };
 };
