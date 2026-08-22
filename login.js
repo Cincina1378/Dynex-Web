@@ -1,6 +1,13 @@
 exports.handler = async function () {
   const clientId = process.env.DISCORD_CLIENT_ID;
 
+  if (!clientId) {
+    return {
+      statusCode: 500,
+      body: "DISCORD_CLIENT_ID bulunamadı."
+    };
+  }
+
   const redirectUri =
     "https://dynexweb.netlify.app/.netlify/functions/callback";
 
@@ -15,7 +22,8 @@ exports.handler = async function () {
     statusCode: 302,
     headers: {
       Location:
-        `https://discord.com/oauth2/authorize?${params.toString()}`
+        "https://discord.com/oauth2/authorize?" +
+        params.toString()
     }
   };
 };
