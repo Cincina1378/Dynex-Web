@@ -9,7 +9,7 @@ exports.handler = async function (event) {
   }
 
   try {
-    const response = await fetch(
+    const tokenResponse = await fetch(
       "https://discord.com/api/oauth2/token",
       {
         method: "POST",
@@ -27,10 +27,10 @@ exports.handler = async function (event) {
       }
     );
 
-    const data = await response.json();
+    const tokenData = await tokenResponse.json();
 
-    if (!response.ok) {
-      console.error("Discord token hatası:", data);
+    if (!tokenResponse.ok) {
+      console.error("Discord token hatası:", tokenData);
 
       return {
         statusCode: 400,
@@ -42,28 +42,46 @@ exports.handler = async function (event) {
       "https://discord.com/api/users/@me",
       {
         headers: {
-          Authorization: `Bearer ${data.access_token}`
+          Authorization:
+            `Bearer ${tokenData.access_token}`
         }
       }
     );
 
     const user = await userResponse.json();
 
+    if (!userResponse.ok) {
+      return {
+        statusCode: 400,
+        body: "Discord kullanıcı bilgileri alınamadı."
+      };
+    }
+
+    const avatar = user.avatar
+      ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`
+      : `https://cdn.discordapp.com/embed/avatars/0.png`;
+
     return {
       statusCode: 302,
+
       multiValueHeaders: {
         "Set-Cookie": [
-          `discord_token=${data.access_token}; Path=/; HttpOnly; Secure; SameSite=Lax`
+          `discord_token=${encodeURIComponent(
+            tokenData.access_token
+          )}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`
         ]
       },
+
       headers: {
         Location:
-          `/?discord_id=${encodeURIComponent(user.id)}&username=${encodeURIComponent(user.username)}`
+          `/?discord_id=${encodeURIComponent(user.id)}` +
+          `&username=${encodeURIComponent(user.username)}` +
+          `&avatar=${encodeURIComponent(avatar)}`
       }
     };
 
   } catch (error) {
-    console.error(error);
+    console.error("Callback hatası:", error);
 
     return {
       statusCode: 500,
