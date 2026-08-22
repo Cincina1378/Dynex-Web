@@ -1,28 +1,24 @@
 exports.handler = async function (event) {
   try {
     const cookie = event.headers.cookie || "";
-
     const match = cookie.match(/discord_token=([^;]+)/);
 
     if (!match) {
       return {
         statusCode: 401,
-        headers: {
-          "Content-Type": "application/json"
-        },
         body: JSON.stringify({
           error: "Discord oturumu bulunamadı."
         })
       };
     }
 
-    const accessToken = decodeURIComponent(match[1]);
+    const token = decodeURIComponent(match[1]);
 
     const response = await fetch(
       "https://discord.com/api/users/@me/guilds",
       {
         headers: {
-          Authorization: `Bearer ${accessToken}`
+          Authorization: `Bearer ${token}`
         }
       }
     );
@@ -30,9 +26,6 @@ exports.handler = async function (event) {
     if (!response.ok) {
       return {
         statusCode: 401,
-        headers: {
-          "Content-Type": "application/json"
-        },
         body: JSON.stringify({
           error: "Discord sunucuları alınamadı."
         })
@@ -44,12 +37,6 @@ exports.handler = async function (event) {
     const result = guilds.map(guild => {
       const permissions = BigInt(guild.permissions || "0");
 
-      const administrator =
-        (permissions & BigInt(0x8)) === BigInt(0x8);
-
-      const manageGuild =
-        (permissions & BigInt(0x20)) === BigInt(0x20);
-
       return {
         id: guild.id,
         name: guild.name,
@@ -58,7 +45,9 @@ exports.handler = async function (event) {
           ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`
           : null,
 
-        canManage: administrator || manageGuild,
+        canManage:
+          (permissions & BigInt(0x8)) === BigInt(0x8) ||
+          (permissions & BigInt(0x20)) === BigInt(0x20),
 
         botInstalled: false
       };
@@ -76,13 +65,10 @@ exports.handler = async function (event) {
     };
 
   } catch (error) {
-    console.error("Dashboard hatası:", error);
+    console.error(error);
 
     return {
       statusCode: 500,
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify({
         error: "Sunucular yüklenirken hata oluştu."
       })
